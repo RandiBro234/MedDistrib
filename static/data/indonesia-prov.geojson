@@ -1,0 +1,315 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "name": "ACEH" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[95.0,5.5],[97.0,5.5],[97.0,3.0],[95.0,3.0],[95.0,5.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "SUMATERA UTARA" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[97.0,4.0],[100.0,4.0],[100.0,1.0],[97.0,1.0],[97.0,4.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "SUMATERA BARAT" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[99.0,1.5],[101.5,1.5],[101.5,-1.0],[99.0,-1.0],[99.0,1.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "RIAU" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[100.5,2.0],[103.5,2.0],[103.5,-1.0],[100.5,-1.0],[100.5,2.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "JAMBI" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[101.5,-1.0],[104.0,-1.0],[104.0,-3.5],[101.5,-3.5],[101.5,-1.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "SUMATERA SELATAN" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[102.0,-2.0],[105.0,-2.0],[105.0,-5.0],[102.0,-5.0],[102.0,-2.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "BENGKULU" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[101.0,-2.5],[103.0,-2.5],[103.0,-4.5],[101.0,-4.5],[101.0,-2.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "LAMPUNG" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[104.5,-4.5],[106.5,-4.5],[106.5,-6.5],[104.5,-6.5],[104.5,-4.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "KEPULAUAN BANGKA BELITUNG" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[106.0,-1.5],[108.0,-1.5],[108.0,-3.5],[106.0,-3.5],[106.0,-1.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "KEPULAUAN RIAU" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[103.0,1.5],[105.5,1.5],[105.5,0.0],[103.0,0.0],[103.0,1.5]]]
+      }
+    },
+
+    {
+      "type": "Feature",
+      "properties": { "name": "DKI JAKARTA" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[106.7,-6.0],[107.0,-6.0],[107.0,-6.3],[106.7,-6.3],[106.7,-6.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "JAWA BARAT" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[106.0,-6.0],[108.5,-6.0],[108.5,-7.5],[106.0,-7.5],[106.0,-6.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "JAWA TENGAH" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[108.5,-6.0],[111.0,-6.0],[111.0,-8.0],[108.5,-8.0],[108.5,-6.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "DI YOGYAKARTA" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[110.0,-7.5],[110.8,-7.5],[110.8,-8.2],[110.0,-8.2],[110.0,-7.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "JAWA TIMUR" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[111.0,-6.0],[114.8,-6.0],[114.8,-8.8],[111.0,-8.8],[111.0,-6.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "BANTEN" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[105.0,-5.8],[106.5,-5.8],[106.5,-7.0],[105.0,-7.0],[105.0,-5.8]]]
+      }
+    },
+
+    {
+      "type": "Feature",
+      "properties": { "name": "BALI" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[114.5,-8.0],[115.8,-8.0],[115.8,-9.0],[114.5,-9.0],[114.5,-8.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "NUSA TENGGARA BARAT" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[116.0,-8.0],[118.0,-8.0],[118.0,-9.2],[116.0,-9.2],[116.0,-8.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "NUSA TENGGARA TIMUR" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[119.0,-8.0],[124.0,-8.0],[124.0,-10.5],[119.0,-10.5],[119.0,-8.0]]]
+      }
+    },
+
+    {
+      "type": "Feature",
+      "properties": { "name": "KALIMANTAN BARAT" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[108.0,2.0],[111.0,2.0],[111.0,-1.0],[108.0,-1.0],[108.0,2.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "KALIMANTAN TENGAH" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[111.0,-0.5],[114.0,-0.5],[114.0,-3.5],[111.0,-3.5],[111.0,-0.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "KALIMANTAN SELATAN" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[114.0,-2.0],[116.5,-2.0],[116.5,-4.5],[114.0,-4.5],[114.0,-2.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "KALIMANTAN TIMUR" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[116.0,1.5],[119.5,1.5],[119.5,-1.5],[116.0,-1.5],[116.0,1.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "KALIMANTAN UTARA" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[116.0,4.5],[119.5,4.5],[119.5,1.5],[116.0,1.5],[116.0,4.5]]]
+      }
+    },
+
+    {
+      "type": "Feature",
+      "properties": { "name": "SULAWESI UTARA" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[123.0,1.0],[125.5,1.0],[125.5,2.5],[123.0,2.5],[123.0,1.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "GORONTALO" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[121.5,0.3],[123.0,0.3],[123.0,1.2],[121.5,1.2],[121.5,0.3]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "SULAWESI TENGAH" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[119.5,-1.5],[122.5,-1.5],[122.5,1.0],[119.5,1.0],[119.5,-1.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "SULAWESI BARAT" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[118.5,-1.5],[120.0,-1.5],[120.0,-3.5],[118.5,-3.5],[118.5,-1.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "SULAWESI SELATAN" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[119.0,-3.0],[122.5,-3.0],[122.5,-6.5],[119.0,-6.5],[119.0,-3.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "SULAWESI TENGGARA" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[121.5,-3.0],[124.5,-3.0],[124.5,-5.5],[121.5,-5.5],[121.5,-3.0]]]
+      }
+    },
+
+    {
+      "type": "Feature",
+      "properties": { "name": "MALUKU" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[127.0,-2.5],[130.5,-2.5],[130.5,-5.5],[127.0,-5.5],[127.0,-2.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "MALUKU UTARA" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[127.0,0.5],[130.0,0.5],[130.0,2.5],[127.0,2.5],[127.0,0.5]]]
+      }
+    },
+
+    {
+      "type": "Feature",
+      "properties": { "name": "PAPUA BARAT DAYA" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[130.5,-1.0],[132.8,-1.0],[132.8,-3.0],[130.5,-3.0],[130.5,-1.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "PAPUA BARAT" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[132.5,-0.5],[134.8,-0.5],[134.8,-3.5],[132.5,-3.5],[132.5,-0.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "PAPUA TENGAH" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[134.8,-2.0],[137.0,-2.0],[137.0,-5.5],[134.8,-5.5],[134.8,-2.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "PAPUA" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[137.0,-2.0],[141.0,-2.0],[141.0,-5.0],[137.0,-5.0],[137.0,-2.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "PAPUA SELATAN" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[136.5,-5.0],[140.5,-5.0],[140.5,-8.8],[136.5,-8.8],[136.5,-5.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "PAPUA PEGUNUNGAN" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[137.0,-3.0],[139.5,-3.0],[139.5,-6.2],[137.0,-6.2],[137.0,-3.0]]]
+      }
+    }
+  ]
+}
