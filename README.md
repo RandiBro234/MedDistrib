@@ -1,20 +1,58 @@
-# MedDistrib
+# 🏥 MedDistrib
 
-Dashboard Flask untuk sistem rekomendasi hybrid distribusi tenaga kesehatan.
+### Hybrid Recommendation System untuk Distribusi Tenaga Kesehatan
 
-## Menjalankan project
-1. Install dependensi
-   pip install -r requirements.txt
+MedDistrib adalah sistem rekomendasi berbasis data untuk membantu **optimalisasi distribusi tenaga kesehatan antar provinsi di Indonesia** menggunakan pendekatan **Hybrid (Content-Based + Knowledge-Based)**.
 
-2. Jalankan Flask
-   python app.py
+---
 
-3. Buka browser
-   http://127.0.0.1:5000
+## 🚀 Fitur
 
-## Struktur
-- app.py: aplikasi utama Flask
-- templates/: file HTML
-- static/: CSS dan JS
-- model/: modul backend model
-- data/: dataset
+* 🔍 **Content-Based** → Cari provinsi dengan karakteristik mirip
+* 📊 **Knowledge-Based** → Ranking prioritas kebutuhan tenaga kesehatan
+* ⚡ **Hybrid** → Kombinasi keduanya untuk hasil lebih akurat
+
+---
+
+## 🧠 Teknologi
+
+Python • Flask • Pandas • Scikit-learn • HTML/CSS
+
+---
+
+## ⚙️ Cara Menjalankan
+
+```bash
+git clone https://github.com/RandiBro234/MedDistrib.git
+cd MedDistrib
+python -m venv venv
+source venv/bin/activate  # atau venv\Scripts\activate (Windows)
+pip install -r requirements.txt
+python app.py
+```
+
+Buka di browser:
+
+```
+http://127.0.0.1:5000
+```
+
+---
+
+## 🎯 Output Sistem
+
+* Provinsi mirip (Content-Based)
+* Prioritas nasional (Knowledge-Based)
+* Rekomendasi hybrid
+
+---
+
+## 👨‍💻 Author
+
+RandiBro234 – PENS
+
+---
+
+## 💡 Insight
+
+Hybrid approach menghasilkan rekomendasi yang lebih **stabil dan realistis** dibanding metode tunggal.
