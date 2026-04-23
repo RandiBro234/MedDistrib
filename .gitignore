@@ -1,0 +1,11 @@
+venv/
+__pycache__/
+*.pyc
+.env
+.DS_Store
+
+# data (opsional, kalau besar)
+data/dataset_scaled.csv
+
+# vscode
+.vscode/

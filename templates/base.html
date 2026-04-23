@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MedDistrib{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="navbar">
+        <div class="brand">MedDistrib</div>
+        <nav>
+            <a href="#hero">Home</a>
+            <a href="#overview">Overview</a>
+            <a href="#results">Results</a>
+            <a href="#about">About</a>
+        </nav>
+        <a class="nav-btn" href="#results">Explore</a>
+    </header>
+
+    {% block content %}{% endblock %}
+
+    <footer class="footer" id="about">
+        <div>
+            <h3>MedDistrib</h3>
+            <p>Sistem rekomendasi hybrid berbasis Content-Based dan Knowledge-Based untuk optimalisasi distribusi tenaga kesehatan.</p>
+        </div>
+        <div class="footer-mini">
+            <span>Flask Dashboard</span>
+            <span>Python Based</span>
+            <span>Interactive View</span>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% block title %}MedDistrib Dashboard{% endblock %}
+
+{% block content %}
+<section class="hero" id="hero">
+    <div class="hero-content">
+        <p class="eyebrow">Hybrid Healthcare Recommendation Dashboard</p>
+        <h1>Distribusi Tenaga Kesehatan yang <span>lebih cerdas</span> dan terarah.</h1>
+        <p class="hero-text">
+            MedDistrib membantu melihat provinsi yang paling mirip, wilayah dengan prioritas tertinggi,
+            dan rekomendasi hybrid berbasis kombinasi similarity serta kebutuhan nyata.
+        </p>
+        <div class="hero-actions">
+            <a href="#results" class="btn btn-primary">Lihat Dashboard</a>
+            <a href="#overview" class="btn btn-secondary">Pelajari Sistem</a>
+        </div>
+
+        <div class="hero-metrics">
+            <div class="metric">
+                <h3>{{ metrics.total_provinsi }}</h3>
+                <p>Provinsi</p>
+            </div>
+            <div class="metric">
+                <h3>{{ "%.3f"|format(metrics.top_similarity) }}</h3>
+                <p>Top Similarity</p>
+            </div>
+            <div class="metric">
+                <h3>{{ "%.3f"|format(metrics.top_priority) }}</h3>
+                <p>Top Priority</p>
+            </div>
+            <div class="metric">
+                <h3>{{ "%.3f"|format(metrics.top_hybrid) }}</h3>
+                <p>Top Hybrid</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="hero-visual">
+        <div class="hero-card">
+            <div class="hero-glow"></div>
+            <div class="hero-avatar">
+                <div class="circle circle-1"></div>
+                <div class="circle circle-2"></div>
+                <div class="human-card">
+                    <div class="human-head"></div>
+                    <div class="human-body"></div>
+                </div>
+            </div>
+            <div class="hero-badge">MedDistrib Insight</div>
+        </div>
+    </div>
+</section>
+
+<section class="wave-section" id="overview">
+    <div class="section-title">
+        <p class="eyebrow center">System Overview</p>
+        <h2>3 alasan dashboard ini cocok untuk proyekmu</h2>
+    </div>
+
+    <div class="card-grid three">
+        <div class="info-card">
+            <div class="icon-box">◎</div>
+            <h3>Content-Based</h3>
+            <p>Mencari provinsi yang paling mirip berdasarkan fitur tenaga kesehatan dan fasilitas.</p>
+        </div>
+        <div class="info-card">
+            <div class="icon-box">▣</div>
+            <h3>Knowledge-Based</h3>
+            <p>Menentukan prioritas wilayah dengan rasio dokter, puskesmas, dan rumah sakit.</p>
+        </div>
+        <div class="info-card">
+            <div class="icon-box">✦</div>
+            <h3>Hybrid</h3>
+            <p>Menggabungkan similarity dan skor prioritas agar rekomendasi lebih relevan.</p>
+        </div>
+    </div>
+</section>
+
+<section class="dashboard-section" id="results">
+    <div class="section-title">
+        <p class="eyebrow center">Interactive Dashboard</p>
+        <h2>Eksplorasi rekomendasi berdasarkan provinsi target</h2>
+    </div>
+
+    <div class="form-card">
+        <form method="POST" action="#results" class="selector-form">
+            <div class="field">
+                <label for="provinsi">Pilih Provinsi Target</label>
+                <select name="provinsi" id="provinsi">
+                    {% for prov in provinces %}
+                        <option value="{{ prov }}" {% if prov == selected_province %}selected{% endif %}>{{ prov }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Tampilkan Hasil</button>
+        </form>
+    </div>
+
+    <div class="results-grid">
+        <div class="result-panel">
+            <div class="panel-head">
+                <p>Content-Based Result</p>
+                <h3>Provinsi Mirip dengan {{ selected_province }}</h3>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Provinsi</th>
+                        <th>Similarity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in similar %}
+                    <tr>
+                        <td>{{ row.provinsi }}</td>
+                        <td>{{ "%.6f"|format(row.similarity) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="result-panel">
+            <div class="panel-head">
+                <p>Knowledge-Based Result</p>
+                <h3>Top Prioritas Nasional</h3>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Provinsi</th>
+                        <th>Skor</th>
+                        <th>Rasio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in priority %}
+                    <tr>
+                        <td>{{ row.provinsi }}</td>
+                        <td>{{ "%.6f"|format(row.skor_prioritas) }}</td>
+                        <td>{{ "%.6f"|format(row.rasio_dokter_puskesmas) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="result-panel wide">
+            <div class="panel-head">
+                <p>Hybrid Recommendation</p>
+                <h3>Rekomendasi akhir untuk {{ selected_province }}</h3>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Provinsi</th>
+                        <th>Similarity</th>
+                        <th>Priority</th>
+                        <th>Hybrid</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in hybrid %}
+                    <tr>
+                        <td>{{ row.provinsi }}</td>
+                        <td>{{ "%.6f"|format(row.similarity) }}</td>
+                        <td>{{ "%.6f"|format(row.skor_prioritas) }}</td>
+                        <td><span class="score-chip">{{ "%.6f"|format(row.skor_hybrid) }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+{% if result_anchor %}
+<script>
+    window.addEventListener("load", function () {
+        const el = document.getElementById("{{ result_anchor }}");
+        if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+    });
+</script>
+{% endif %}
+{% endblock %}
