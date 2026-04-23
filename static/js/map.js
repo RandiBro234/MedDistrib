@@ -10,7 +10,16 @@ function normalizeProvinceName(name) {
     const mapping = {
         "DAERAH ISTIMEWA YOGYAKARTA": "DI YOGYAKARTA",
         "YOGYAKARTA": "DI YOGYAKARTA",
-        "JAKARTA": "DKI JAKARTA"
+        "JAKARTA": "DKI JAKARTA",
+        "DKI JAKARTA": "DKI JAKARTA",
+        "NUSA TENGGARA BARAT": "NUSA TENGGARA BARAT",
+        "NUSA TENGGARA TIMUR": "NUSA TENGGARA TIMUR",
+        "PAPUA BARAT DAYA": "PAPUA BARAT DAYA",
+        "PAPUA BARAT": "PAPUA BARAT",
+        "PAPUA TENGAH": "PAPUA TENGAH",
+        "PAPUA SELATAN": "PAPUA SELATAN",
+        "PAPUA PEGUNUNGAN": "PAPUA PEGUNUNGAN",
+        "PAPUA": "PAPUA"
     };
 
     const upper = name.toUpperCase().trim();
@@ -59,13 +68,23 @@ function updateInfoPanel(provinsi) {
     }
 }
 
-function styleFeature() {
+function styleFeature(feature) {
+    const provinsi =
+        normalizeProvinceName(
+            feature.properties.name ||
+            feature.properties.NAME_1 ||
+            feature.properties.Provinsi ||
+            "Unknown"
+        );
+
+    const isSelected = provinsi === currentSelectedProvince;
+
     return {
-        fillColor: "#1f6f68",
-        weight: 1.2,
+        fillColor: isSelected ? "#f2a51a" : "#1f6f68",
+        weight: isSelected ? 2.5 : 1.2,
         opacity: 1,
         color: "#ffffff",
-        fillOpacity: 0.75
+        fillOpacity: isSelected ? 0.9 : 0.75
     };
 }
 
@@ -76,10 +95,14 @@ function highlightFeature(e) {
         color: "#f2a51a",
         fillOpacity: 0.9
     });
-    layer.bringToFront();
+
+    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+        layer.bringToFront();
+    }
 }
 
 let geojsonLayer;
+let currentSelectedProvince = "";
 
 function resetHighlight(e) {
     if (geojsonLayer) {
@@ -94,15 +117,37 @@ function onEachFeature(feature, layer) {
         feature.properties.Provinsi ||
         "Unknown";
 
+    const normalized = normalizeProvinceName(provinsi);
+
     layer.on({
         mouseover: highlightFeature,
         mouseout: resetHighlight,
-        click: function() {
-            updateInfoPanel(provinsi);
+        click: function () {
+            currentSelectedProvince = normalized;
+
+            // update panel kanan langsung
+            updateInfoPanel(normalized);
+
+            // update style semua layer agar provinsi terpilih berubah warna
+            if (geojsonLayer) {
+                geojsonLayer.setStyle(styleFeature);
+            }
+
+            // sinkronkan dropdown
+            const select = document.getElementById("provinsi-select");
+            if (select) {
+                select.value = normalized;
+            }
+
+            // redirect ke Flask supaya hasil bawah ikut berubah
+            const url = new URL(window.location.href);
+            url.searchParams.set("provinsi", normalized);
+            url.hash = "results";
+            window.location.href = url.toString();
         }
     });
 
-    layer.bindTooltip(provinsi, {
+    layer.bindTooltip(normalized, {
         sticky: true
     });
 }
@@ -117,6 +162,14 @@ fetch("/static/data/indonesia-prov.geojson")
     .then(data => {
         console.log("GeoJSON loaded:", data);
 
+        const select = document.getElementById("provinsi-select");
+        if (select && select.value) {
+            currentSelectedProvince = normalizeProvinceName(select.value);
+        } else {
+            const firstProvince = Object.keys(provinceData)[0];
+            currentSelectedProvince = firstProvince ? normalizeProvinceName(firstProvince) : "";
+        }
+
         geojsonLayer = L.geoJSON(data, {
             style: styleFeature,
             onEachFeature: onEachFeature
@@ -124,9 +177,8 @@ fetch("/static/data/indonesia-prov.geojson")
 
         map.fitBounds(geojsonLayer.getBounds());
 
-        const firstProvince = Object.keys(provinceData)[0];
-        if (firstProvince) {
-            updateInfoPanel(firstProvince);
+        if (currentSelectedProvince) {
+            updateInfoPanel(currentSelectedProvince);
         }
     })
     .catch(error => {

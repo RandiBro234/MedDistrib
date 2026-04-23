@@ -39,7 +39,9 @@ def add_decision_info(df):
 @app.route("/", methods=["GET", "POST"])
 def index():
     provinces = get_real_provinces()
-    selected = request.form.get("provinsi", "ACEH")
+
+    # penting: baca dari query param ATAU form
+    selected = request.args.get("provinsi") or request.form.get("provinsi") or "ACEH"
 
     cb_df = get_similar_real_provinces(selected, top_n=10)
     kb_top10 = get_priority_provinces(10)
