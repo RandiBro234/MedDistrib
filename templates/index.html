@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedDistrib</title>
+    <title>MedDistrib — Sistem Rekomendasi Distribusi Tenaga Kesehatan</title>
+    <meta name="description" content="Sistem Rekomendasi Alokasi dan Prioritas Distribusi Tenaga Kesehatan Antar Provinsi Berbasis Hybrid Recommendation">
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
@@ -24,12 +25,12 @@
         <div class="nav-links">
             <a href="#hero">Home</a>
             <a href="#overview">Overview</a>
-            <a href="#results">Results</a>
-            <a href="#map-section">Map</a>
-            <a href="#about">About</a>
+            <a href="#map-section">Peta</a>
+            <a href="#results">Hasil</a>
+            <a href="#about">Tentang</a>
         </div>
 
-        <a href="#results" class="nav-btn">Explore</a>
+        <a href="#map-section" class="nav-btn">Jelajahi</a>
     </nav>
 
     <!-- HERO -->
@@ -41,9 +42,9 @@
                 Tenaga Kesehatan
             </h1>
             <p class="hero-desc">
-                Sistem rekomendasi berbasis data untuk membantu pemerataan tenaga kesehatan
-                antar provinsi di Indonesia dengan pendekatan Content-Based, Knowledge-Based,
-                dan Hybrid Recommendation.
+                Sistem Rekomendasi Alokasi dan Prioritas Distribusi Tenaga Kesehatan
+                Antar Provinsi berbasis Hybrid Recommendation — menggabungkan
+                Knowledge-Based Scoring dan Content-Based Filtering.
             </p>
 
             <form method="POST" action="#results" class="hero-form">
@@ -54,21 +55,21 @@
                     </option>
                     {% endfor %}
                 </select>
-                <button type="submit">Mulai</button>
+                <button type="submit">Analisis</button>
             </form>
 
             {% if selected %}
             <div class="hero-stats">
                 <div class="stat-box">
-                    <h3>{{ "%.2f"|format(cb_result[0].similarity) }}</h3>
+                    <h3>{{ "%.3f"|format(cb_result[0].similarity) }}</h3>
                     <p>Top Similarity</p>
                 </div>
                 <div class="stat-box">
-                    <h3>{{ "%.2f"|format(kb_result[0].skor_prioritas) }}</h3>
-                    <p>Top Priority</p>
+                    <h3>{{ "%.3f"|format(kb_result[0].skor_prioritas) }}</h3>
+                    <p>Skor Prioritas</p>
                 </div>
                 <div class="stat-box">
-                    <h3>{{ "%.2f"|format(hybrid_result[0].skor_hybrid) }}</h3>
+                    <h3>{{ "%.3f"|format(hybrid_result[0].skor_hybrid) }}</h3>
                     <p>Top Hybrid</p>
                 </div>
             </div>
@@ -86,8 +87,8 @@
                     <div class="mockup-subtitle">Health Workforce Optimization</div>
 
                     <div class="mockup-grid">
-                        <div class="mockup-mini">CB</div>
                         <div class="mockup-mini">KB</div>
+                        <div class="mockup-mini">CB</div>
                         <div class="mockup-mini">HY</div>
                     </div>
                 </div>
@@ -101,56 +102,64 @@
     <!-- OVERVIEW -->
     <section class="overview" id="overview">
         <div class="section-head">
-            <p class="section-tag">System Overview</p>
-            <h2>3 alasan dashboard ini cocok untuk proyekmu</h2>
+            <p class="section-tag">Metodologi Sistem</p>
+            <h2>Tiga tahap pendekatan berbasis data untuk distribusi yang tepat sasaran</h2>
         </div>
 
         <div class="overview-grid">
             <div class="overview-card">
-                <div class="overview-icon">◎</div>
-                <h3>Content-Based</h3>
+                <div class="overview-icon">▣</div>
+                <h3>Knowledge-Based Scoring</h3>
                 <p>
-                    Mencari provinsi yang paling mirip berdasarkan karakteristik tenaga kesehatan
-                    dan fasilitas layanan.
+                    Menentukan Prioritas Distribusi Tenaga Kesehatan berdasarkan
+                    Rasio Dokter/Puskesmas, jumlah puskesmas, dokter, dan rumah sakit.
+                    Dijalankan pertama kali sebelum proses lainnya.
                 </p>
             </div>
 
             <div class="overview-card">
-                <div class="overview-icon">▣</div>
-                <h3>Knowledge-Based</h3>
+                <div class="overview-icon">◎</div>
+                <h3>Content-Based Filtering</h3>
                 <p>
-                    Menentukan prioritas distribusi berdasarkan rasio dokter, puskesmas,
-                    rumah sakit, dan kebutuhan wilayah.
+                    Mencari Provinsi Mirip berdasarkan karakteristik kesehatan wilayah
+                    menggunakan Cosine Similarity pada fitur: dokter, puskesmas,
+                    rumah sakit, dan Rasio Dokter/Puskesmas.
                 </p>
             </div>
 
             <div class="overview-card">
                 <div class="overview-icon">✦</div>
-                <h3>Hybrid</h3>
+                <h3>Hybrid Recommendation</h3>
                 <p>
-                    Menggabungkan kemiripan dan prioritas agar hasil rekomendasi menjadi
-                    lebih relevan dan kontekstual.
+                    Menggabungkan similarity (60%) dan Skor Prioritas (40%)
+                    agar rekomendasi distribusi tenaga kesehatan lebih objektif
+                    dan tepat sasaran.
                 </p>
             </div>
         </div>
     </section>
 
-    <!-- MAP SECTION -->
+    <!-- ============================================================ -->
+    <!-- 1. PETA INTERAKTIF                                           -->
+    <!-- ============================================================ -->
     <section class="map-section" id="map-section">
         <div class="section-head">
-            <p class="section-tag">Interactive Map</p>
-            <h2>Klik provinsi di peta untuk melihat ringkasan rekomendasi</h2>
+            <p class="section-tag">Peta Interaktif</p>
+            <h2>Klik provinsi di peta untuk melihat ringkasan rekomendasi distribusi</h2>
         </div>
 
         <div class="map-layout">
+            <!-- Peta -->
             <div class="map-card">
                 <div id="map"></div>
             </div>
 
+            <!-- Panel Informasi Provinsi -->
             <div class="map-info-card">
-                <div class="panel-topline">Map Detail</div>
+                <div class="panel-topline">Informasi Provinsi</div>
                 <h3 id="map-provinsi-title">Pilih provinsi di peta</h3>
 
+                <!-- 2. Informasi Provinsi: Skor Prioritas & Rasio Dokter/Puskesmas -->
                 <div class="map-metric-grid">
                     <div class="map-metric">
                         <span>Skor Prioritas</span>
@@ -158,18 +167,22 @@
                     </div>
 
                     <div class="map-metric">
-                        <span>Rasio</span>
+                        <span>Rasio Dokter/Puskesmas</span>
                         <strong id="map-rasio">-</strong>
                     </div>
                 </div>
 
+                <!-- 3. Top Provinsi Mirip — sumber: Content-Based Filtering -->
                 <div class="map-subsection">
                     <h4>Top Provinsi Mirip</h4>
+                    <p class="subsection-source">Sumber: Content-Based Filtering</p>
                     <ul id="map-cb-list" class="mini-list"></ul>
                 </div>
 
+                <!-- 4. Top Hybrid Recommendation — sumber: Hybrid Recommendation -->
                 <div class="map-subsection">
                     <h4>Top Hybrid Recommendation</h4>
+                    <p class="subsection-source">Sumber: Hybrid Recommendation</p>
                     <ul id="map-hybrid-list" class="mini-list"></ul>
                 </div>
             </div>
@@ -177,17 +190,25 @@
     </section>
 
     {% if selected %}
-    <!-- RESULTS -->
+    <!-- ============================================================ -->
+    <!-- RESULTS                                                       -->
+    <!-- ============================================================ -->
     <section class="results" id="results">
         <div class="section-head">
-            <p class="section-tag">Recommendation Results</p>
-            <h2>Eksplorasi rekomendasi berdasarkan provinsi target</h2>
+            <p class="section-tag">Hasil Rekomendasi</p>
+            <h2>Rekomendasi distribusi untuk <strong>{{ selected }}</strong></h2>
         </div>
 
-        <!-- HYBRID -->
+        <!-- -------------------------------------------------------- -->
+        <!-- 4. TOP HYBRID RECOMMENDATION                             -->
+        <!-- -------------------------------------------------------- -->
         <div class="main-result-card">
             <div class="panel-topline">Hybrid Recommendation</div>
             <h3>Rekomendasi akhir untuk {{ selected }}</h3>
+            <p class="card-desc">
+                Menggabungkan Cosine Similarity (60%) dan Skor Prioritas (40%)
+                untuk menghasilkan rekomendasi distribusi tenaga kesehatan yang tepat sasaran.
+            </p>
 
             <div class="hybrid-list">
                 {% for row in hybrid_result[:5] %}
@@ -205,11 +226,16 @@
             </div>
         </div>
 
-        <!-- CONTENT-BASED + KNOWLEDGE-BASED -->
+        <!-- -------------------------------------------------------- -->
+        <!-- 3. TOP PROVINSI MIRIP  +  5. PRIORITAS NASIONAL          -->
+        <!-- -------------------------------------------------------- -->
         <div class="result-grid">
+
+            <!-- 3. Content-Based Filtering: Provinsi Mirip -->
             <div class="result-card">
-                <div class="panel-topline">Content-Based Result</div>
-                <h3>Provinsi mirip dengan {{ selected }}</h3>
+                <div class="panel-topline">Content-Based Filtering</div>
+                <h3>Provinsi Mirip dengan {{ selected }}</h3>
+                <p class="card-desc">Kemiripan berdasarkan Cosine Similarity pada fitur kesehatan wilayah.</p>
 
                 <table>
                     <thead>
@@ -229,16 +255,18 @@
                 </table>
             </div>
 
+            <!-- 5. Knowledge-Based Scoring: Prioritas Distribusi Tenaga Kesehatan Nasional -->
             <div class="result-card">
-                <div class="panel-topline">Knowledge-Based Result</div>
-                <h3>Top prioritas nasional</h3>
+                <div class="panel-topline">Knowledge-Based Scoring</div>
+                <h3>Prioritas Distribusi Tenaga Kesehatan Nasional</h3>
+                <p class="card-desc">Top 10 provinsi dengan kebutuhan distribusi tenaga kesehatan tertinggi.</p>
 
                 <table>
                     <thead>
                         <tr>
                             <th>Provinsi</th>
-                            <th>Skor</th>
-                            <th>Rasio</th>
+                            <th>Skor Prioritas</th>
+                            <th>Rasio Dokter/Puskesmas</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -252,6 +280,7 @@
                     </tbody>
                 </table>
             </div>
+
         </div>
     </section>
     {% endif %}
@@ -260,11 +289,17 @@
     <footer class="footer" id="about">
         <div>
             <h3>MedDistrib</h3>
-            <p>Sistem rekomendasi hybrid untuk optimalisasi distribusi tenaga kesehatan di Indonesia.</p>
+            <p>
+                Sistem Rekomendasi Alokasi dan Prioritas Distribusi Tenaga Kesehatan
+                Antar Provinsi Berbasis Hybrid Recommendation.
+            </p>
+            <p style="margin-top: 0.5rem; opacity: 0.6; font-size: 0.85rem;">
+                Metodologi: Knowledge-Based Scoring → Content-Based Filtering → Hybrid Recommendation
+            </p>
         </div>
     </footer>
 
-    <!-- DATA DARI FLASK -->
+    <!-- DATA DARI FLASK (province_data untuk panel peta) -->
     <script>
         const provinceData = {{ province_data_json|safe }};
     </script>
