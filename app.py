@@ -43,6 +43,21 @@ def add_decision_info(df):
     return df
 
 
+def normalize_province_name(name):
+    if not name:
+        return "UNKNOWN"
+    upper = str(name).strip().upper()
+    upper = upper.replace("NUSATENGGARA", "NUSA TENGGARA")
+    upper = upper.replace("DAERAH ISTIMEWA YOGYAKARTA", "DI YOGYAKARTA")
+    upper = upper.replace("YOGYAKARTA", "DI YOGYAKARTA")
+    upper = upper.replace("IRIAN JAYA TIMUR", "PAPUA")
+    upper = upper.replace("IRIAN JAYA TENGAH", "PAPUA TENGAH")
+    upper = upper.replace("IRIAN JAYA BARAT", "PAPUA BARAT")
+    if upper == "JAKARTA":
+        upper = "DKI JAKARTA"
+    return upper
+
+
 @app.route("/", methods=["GET", "POST"])
 def index():
     # ------------------------------------------------------------------ #
@@ -52,7 +67,8 @@ def index():
     provinces = get_real_provinces()
 
     # Baca provinsi dari query param (klik peta) atau form, default ACEH
-    selected = request.args.get("provinsi") or request.form.get("provinsi") or "ACEH"
+    raw_selected = request.args.get("provinsi") or request.form.get("provinsi") or "ACEH"
+    selected = normalize_province_name(raw_selected)
 
     # 1. Knowledge-Based Scoring — menentukan Prioritas Distribusi Tenaga Kesehatan
     kb_top10 = get_priority_provinces(10)

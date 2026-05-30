@@ -9,7 +9,9 @@
   --text:#183434;
   --muted:#66807d;
   --line:#dbe7e3;
-  --shadow:0 10px 30px rgba(18, 70, 66, 0.10);
+  --shadow:0 16px 40px rgba(31, 111, 104, 0.08);
+  --glass-bg:rgba(255, 255, 255, 0.75);
+  --glass-border:1px solid rgba(255, 255, 255, 0.6);
 }
 
 *{
@@ -23,7 +25,8 @@ html{
 body{
   margin:0;
   font-family:Arial, sans-serif;
-  background:var(--bg);
+  background: linear-gradient(135deg, #f4f5f4 0%, #e8f0ee 100%);
+  background-attachment: fixed;
   color:var(--text);
 }
 
@@ -289,12 +292,21 @@ body{
 }
 
 .overview-card{
-  background:var(--white);
+  background:var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border:var(--glass-border);
   border-radius:24px;
   padding:28px;
   box-shadow:var(--shadow);
   position:relative;
   overflow:hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.overview-card:hover{
+  transform: translateY(-6px);
+  box-shadow: 0 20px 48px rgba(23, 79, 74, 0.12);
 }
 
 .overview-card::before,
@@ -362,13 +374,22 @@ body{
 
 .map-card,
 .map-info-card{
-  background:var(--white);
+  background:var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border:var(--glass-border);
   border-radius:24px;
-  padding:20px;
+  padding:24px;
   box-shadow:var(--shadow);
   overflow:hidden;
   position:relative;
   z-index:1;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.map-card:hover, .map-info-card:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 20px 48px rgba(23, 79, 74, 0.12);
 }
 
 #map{
@@ -397,6 +418,24 @@ body{
   z-index:1 !important;
 }
 
+/* LEAFLET TOOLTIP FIX */
+.leaflet-tooltip {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  border-radius: 20px !important;
+  padding: 8px 18px !important;
+  color: var(--green-dark) !important;
+  font-weight: bold !important;
+  font-size: 14px !important;
+  box-shadow: 0 8px 24px rgba(31, 111, 104, 0.15) !important;
+  transition: all 0.2s ease;
+}
+.leaflet-tooltip::before {
+  display: none !important;
+}
+
 .map-info-card .panel-topline{
   color:#7c9491;
   font-size:14px;
@@ -417,10 +456,19 @@ body{
 }
 
 .map-metric{
-  background:#f7f9f8;
-  border:1px solid #edf3f1;
-  border-radius:16px;
+  background:rgba(255,255,255,0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border:1px solid rgba(255,255,255,0.7);
+  border-radius:20px;
   padding:16px;
+  transition: all 0.3s ease;
+}
+
+.map-metric:hover{
+  background:rgba(255,255,255,0.85);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(31, 111, 104, 0.08);
 }
 
 .map-metric span{
@@ -458,11 +506,20 @@ body{
 
 /* MAIN RESULT */
 .main-result-card{
-  background:var(--white);
+  background:var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border:var(--glass-border);
   border-radius:28px;
-  padding:28px;
+  padding:32px;
   box-shadow:var(--shadow);
   margin-bottom:24px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.main-result-card:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 20px 48px rgba(23, 79, 74, 0.12);
 }
 
 .panel-topline{
@@ -501,9 +558,18 @@ body{
   justify-content:space-between;
   align-items:center;
   padding:18px 20px;
-  border-radius:18px;
-  background:#f7f9f8;
-  border:1px solid #edf3f1;
+  border-radius:20px;
+  background:rgba(255,255,255,0.4);
+  border:1px solid rgba(255,255,255,0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition: all 0.3s ease;
+}
+
+.hybrid-item:hover{
+  background:rgba(255,255,255,0.8);
+  transform: translateX(6px);
+  box-shadow: 0 6px 20px rgba(31, 111, 104, 0.08);
 }
 
 .hybrid-item.highlight{
@@ -542,10 +608,19 @@ body{
 }
 
 .result-card{
-  background:var(--white);
+  background:var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border:var(--glass-border);
   border-radius:24px;
-  padding:24px;
+  padding:28px;
   box-shadow:var(--shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.result-card:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 20px 48px rgba(23, 79, 74, 0.12);
 }
 
 .result-card h3{

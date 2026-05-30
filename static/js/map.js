@@ -5,25 +5,62 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 function normalizeProvinceName(name) {
-    if (!name) return "";
+    if (!name) return "UNKNOWN";
+    
+    let upper = name.trim().toUpperCase();
+    upper = upper.replace("NUSATENGGARA", "NUSA TENGGARA");
+    upper = upper.replace("DAERAH ISTIMEWA YOGYAKARTA", "DI YOGYAKARTA");
+    upper = upper.replace("IRIAN JAYA TIMUR", "PAPUA");
+    upper = upper.replace("IRIAN JAYA TENGAH", "PAPUA TENGAH");
+    upper = upper.replace("IRIAN JAYA BARAT", "PAPUA BARAT");
+    
+    if (upper === "JAKARTA") upper = "DKI JAKARTA";
+    if (upper === "YOGYAKARTA") upper = "DI YOGYAKARTA";
+    
+    return upper;
+}
 
-    const mapping = {
-        "DAERAH ISTIMEWA YOGYAKARTA": "DI YOGYAKARTA",
-        "YOGYAKARTA": "DI YOGYAKARTA",
-        "JAKARTA": "DKI JAKARTA",
-        "DKI JAKARTA": "DKI JAKARTA",
-        "NUSA TENGGARA BARAT": "NUSA TENGGARA BARAT",
-        "NUSA TENGGARA TIMUR": "NUSA TENGGARA TIMUR",
-        "PAPUA BARAT DAYA": "PAPUA BARAT DAYA",
-        "PAPUA BARAT": "PAPUA BARAT",
-        "PAPUA TENGAH": "PAPUA TENGAH",
-        "PAPUA SELATAN": "PAPUA SELATAN",
-        "PAPUA PEGUNUNGAN": "PAPUA PEGUNUNGAN",
-        "PAPUA": "PAPUA"
-    };
+function getProvinceName(feature) {
+    return normalizeProvinceName(
+        feature.properties.Propinsi ||
+        feature.properties.name ||
+        feature.properties.PROVINSI ||
+        feature.properties.NAME_1 ||
+        "UNKNOWN"
+    );
+}
 
-    const upper = name.toUpperCase().trim();
-    return mapping[upper] || upper;
+// Calculate min and max scores for choropleth interpolation
+let minScore = 1;
+let maxScore = 0;
+for (const prov in provinceData) {
+    if (provinceData[prov] && provinceData[prov].knowledge_based) {
+        const s = provinceData[prov].knowledge_based.skor_prioritas;
+        if (s < minScore) minScore = s;
+        if (s > maxScore) maxScore = s;
+    }
+}
+
+function getColor(score, minS, maxS) {
+    if (maxS === minS) return "#f7b267";
+    let t = (score - minS) / (maxS - minS);
+    t = Math.max(0, Math.min(1, t)); // clamp 0 to 1
+
+    let r, g, b;
+    if (t < 0.5) {
+        // interpolate from low (#1e8a6e) to mid (#f7b267)
+        let t2 = t / 0.5;
+        r = Math.round(30 + t2 * (247 - 30));
+        g = Math.round(138 + t2 * (178 - 138));
+        b = Math.round(110 + t2 * (103 - 110));
+    } else {
+        // interpolate from mid (#f7b267) to high (#f26430)
+        let t2 = (t - 0.5) / 0.5;
+        r = Math.round(247 + t2 * (242 - 247));
+        g = Math.round(178 + t2 * (100 - 178));
+        b = Math.round(103 + t2 * (48 - 103));
+    }
+    return `rgb(${r}, ${g}, ${b})`;
 }
 
 function updateInfoPanel(provinsi) {
@@ -69,31 +106,32 @@ function updateInfoPanel(provinsi) {
 }
 
 function styleFeature(feature) {
-    const provinsi =
-        normalizeProvinceName(
-            feature.properties.name ||
-            feature.properties.NAME_1 ||
-            feature.properties.Provinsi ||
-            "Unknown"
-        );
-
+    const provinsi = getProvinceName(feature);
     const isSelected = provinsi === currentSelectedProvince;
+    const data = provinceData[provinsi];
+    
+    let score = minScore;
+    if (data && data.knowledge_based && data.knowledge_based.skor_prioritas) {
+        score = data.knowledge_based.skor_prioritas;
+    }
+
+    const fillColor = getColor(score, minScore, maxScore);
 
     return {
-        fillColor: isSelected ? "#f2a51a" : "#1f6f68",
-        weight: isSelected ? 2.5 : 1.2,
+        fillColor: fillColor,
+        weight: isSelected ? 3 : 1,
         opacity: 1,
-        color: "#ffffff",
-        fillOpacity: isSelected ? 0.9 : 0.75
+        color: isSelected ? "#ffffff" : "#ffffff", // Light border to pop against choropleth
+        fillOpacity: isSelected ? 1.0 : 0.8
     };
 }
 
 function highlightFeature(e) {
     const layer = e.target;
     layer.setStyle({
-        weight: 2,
-        color: "#f2a51a",
-        fillOpacity: 0.9
+        weight: 3,
+        color: "#ffffff",
+        fillOpacity: 1.0
     });
 
     if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
@@ -111,13 +149,7 @@ function resetHighlight(e) {
 }
 
 function onEachFeature(feature, layer) {
-    const provinsi =
-        feature.properties.name ||
-        feature.properties.NAME_1 ||
-        feature.properties.Provinsi ||
-        "Unknown";
-
-    const normalized = normalizeProvinceName(provinsi);
+    const normalized = getProvinceName(feature);
 
     layer.on({
         mouseover: highlightFeature,
@@ -147,12 +179,35 @@ function onEachFeature(feature, layer) {
         }
     });
 
-    layer.bindTooltip(normalized, {
+    // Buat Tooltip HTML
+    const data = provinceData[normalized];
+    let scoreText = "-";
+    let rasioText = "-";
+    if (data && data.knowledge_based) {
+        scoreText = Number(data.knowledge_based.skor_prioritas).toFixed(3);
+        rasioText = Number(data.knowledge_based.rasio_dokter_puskesmas).toFixed(3);
+    }
+
+    const tooltipContent = `
+        <div style="text-align:center; min-width: 140px;">
+            <strong style="display:block; margin-bottom:4px; font-size:15px; color:#183434;">${normalized}</strong>
+            <div style="font-size:13px; color:#1f6f68; display:flex; justify-content:space-between; margin-bottom:2px;">
+                <span>Skor Prioritas:</span>
+                <strong>${scoreText}</strong>
+            </div>
+            <div style="font-size:13px; color:#1f6f68; display:flex; justify-content:space-between;">
+                <span>Rasio D/P:</span>
+                <strong>${rasioText}</strong>
+            </div>
+        </div>
+    `;
+
+    layer.bindTooltip(tooltipContent, {
         sticky: true
     });
 }
 
-fetch("/static/data/indonesia-prov.geojson")
+fetch("/static/data/indonesia-prov-real.geojson")
     .then(response => {
         if (!response.ok) {
             throw new Error("HTTP status " + response.status);
