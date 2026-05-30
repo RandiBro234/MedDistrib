@@ -47,14 +47,25 @@ def normalize_province_name(name):
     if not name:
         return "UNKNOWN"
     upper = str(name).strip().upper()
+    
+    # Hapus prefix DI. kecuali untuk YOGYAKARTA
+    if upper.startswith("DI. ") and "YOGYAKARTA" not in upper:
+        upper = upper.replace("DI. ", "")
+        
     upper = upper.replace("NUSATENGGARA", "NUSA TENGGARA")
     upper = upper.replace("DAERAH ISTIMEWA YOGYAKARTA", "DI YOGYAKARTA")
     upper = upper.replace("YOGYAKARTA", "DI YOGYAKARTA")
     upper = upper.replace("IRIAN JAYA TIMUR", "PAPUA")
     upper = upper.replace("IRIAN JAYA TENGAH", "PAPUA TENGAH")
     upper = upper.replace("IRIAN JAYA BARAT", "PAPUA BARAT")
+    
+    if upper == "PROBANTEN":
+        upper = "BANTEN"
+    if upper == "BANGKA BELITUNG":
+        upper = "KEPULAUAN BANGKA BELITUNG"
     if upper == "JAKARTA":
         upper = "DKI JAKARTA"
+        
     return upper
 
 
