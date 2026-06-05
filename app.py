@@ -144,6 +144,9 @@ def index():
         province_data_json=json.dumps(province_data)
     )
 
+@app.route("/test")
+def test():
+    return "Flask MedDistrib jalan"
 
 if __name__ == "__main__":
     app.run(debug=True)
