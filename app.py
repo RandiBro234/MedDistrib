@@ -7,6 +7,9 @@ import json
 
 app = Flask(__name__)
 
+# Cache agar province_data tidak dihitung ulang setiap refresh
+PROVINCE_DATA_CACHE = None
+
 
 def add_decision_info(df):
     """
@@ -17,7 +20,7 @@ def add_decision_info(df):
     rekomendasi_list = []
 
     for _, row in df.iterrows():
-        hybrid  = row["skor_hybrid"]
+        hybrid = row["skor_hybrid"]
         priority = row["skor_prioritas"]
 
         if hybrid > 0.9:
@@ -38,7 +41,7 @@ def add_decision_info(df):
         rekomendasi_list.append(rekom)
 
     df = df.copy()
-    df["status"]      = status_list
+    df["status"] = status_list
     df["rekomendasi"] = rekomendasi_list
     return df
 
@@ -46,93 +49,113 @@ def add_decision_info(df):
 def normalize_province_name(name):
     if not name:
         return "UNKNOWN"
+
     upper = str(name).strip().upper()
-    
-    # Hapus prefix DI. kecuali untuk YOGYAKARTA
+
     if upper.startswith("DI. ") and "YOGYAKARTA" not in upper:
         upper = upper.replace("DI. ", "")
-        
+
     upper = upper.replace("NUSATENGGARA", "NUSA TENGGARA")
     upper = upper.replace("DAERAH ISTIMEWA YOGYAKARTA", "DI YOGYAKARTA")
     upper = upper.replace("YOGYAKARTA", "DI YOGYAKARTA")
     upper = upper.replace("IRIAN JAYA TIMUR", "PAPUA")
     upper = upper.replace("IRIAN JAYA TENGAH", "PAPUA TENGAH")
     upper = upper.replace("IRIAN JAYA BARAT", "PAPUA BARAT")
-    
+
     if upper == "PROBANTEN":
         upper = "BANTEN"
     if upper == "BANGKA BELITUNG":
         upper = "KEPULAUAN BANGKA BELITUNG"
     if upper == "JAKARTA":
         upper = "DKI JAKARTA"
-        
+
     return upper
+
+
+def get_province_data_cached(provinces, kb_full):
+    """
+    Membuat data untuk panel peta.
+    Data ini disimpan di cache agar tidak dihitung ulang setiap refresh.
+    """
+    global PROVINCE_DATA_CACHE
+
+    if PROVINCE_DATA_CACHE is not None:
+        return PROVINCE_DATA_CACHE
+
+    province_data = {}
+
+    for prov in provinces:
+        try:
+            cb_tmp = get_similar_provinces(prov, top_n=5).to_dict(orient="records")
+
+            hybrid_tmp = hybrid_recommendation(prov, top_n=5)
+            hybrid_tmp = add_decision_info(hybrid_tmp).to_dict(orient="records")
+
+            priority_row = kb_full[kb_full["provinsi"] == prov]
+
+            if not priority_row.empty:
+                priority_info = {
+                    "skor_prioritas": float(priority_row.iloc[0]["skor_prioritas"]),
+                    "rasio_dokter_puskesmas": float(
+                        priority_row.iloc[0]["rasio_dokter_puskesmas"]
+                    ),
+                }
+            else:
+                priority_info = {
+                    "skor_prioritas": 0.0,
+                    "rasio_dokter_puskesmas": 0.0,
+                }
+
+            province_data[prov] = {
+                "content_based": cb_tmp,
+                "knowledge_based": priority_info,
+                "hybrid": hybrid_tmp,
+            }
+
+        except Exception as e:
+            print(f"Error processing province {prov}: {e}")
+
+            province_data[prov] = {
+                "content_based": [],
+                "knowledge_based": {
+                    "skor_prioritas": 0.0,
+                    "rasio_dokter_puskesmas": 0.0,
+                },
+                "hybrid": [],
+            }
+
+    PROVINCE_DATA_CACHE = province_data
+    return PROVINCE_DATA_CACHE
 
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    # ------------------------------------------------------------------ #
-    # Alur: KB Scoring → CBF → Hybrid Recommendation                      #
-    # ------------------------------------------------------------------ #
-
     provinces = get_real_provinces()
 
-    # Baca provinsi dari query param (klik peta) atau form, default ACEH
-    raw_selected = request.args.get("provinsi") or request.form.get("provinsi") or "ACEH"
+    raw_selected = (
+        request.args.get("provinsi")
+        or request.form.get("provinsi")
+        or "ACEH"
+    )
     selected = normalize_province_name(raw_selected)
 
-    # 1. Knowledge-Based Scoring — menentukan Prioritas Distribusi Tenaga Kesehatan
+    # Knowledge-Based Scoring
     kb_top10 = get_priority_provinces(10)
-    kb_full  = build_priority()
+    kb_full = build_priority()
 
-    # 2. Content-Based Filtering — mencari Provinsi Mirip
+    # Content-Based Filtering
     cb_df = get_similar_provinces(selected, top_n=10)
 
-    # 3. Hybrid Recommendation — menggabungkan similarity + skor prioritas
+    # Hybrid Recommendation
     hybrid_df = hybrid_recommendation(selected, top_n=10)
     hybrid_df = add_decision_info(hybrid_df)
 
-    cb_result     = cb_df.to_dict(orient="records")
-    kb_result     = kb_top10.to_dict(orient="records")
+    cb_result = cb_df.to_dict(orient="records")
+    kb_result = kb_top10.to_dict(orient="records")
     hybrid_result = hybrid_df.to_dict(orient="records")
 
-    # ------------------------------------------------------------------ #
-    # Bangun province_data untuk panel peta (semua provinsi, top-5 each)  #
-    # ------------------------------------------------------------------ #
-    province_data = {}
-    for prov in provinces:
-        try:
-            # Content-Based: Provinsi Mirip
-            cb_tmp = get_similar_provinces(prov, top_n=5).to_dict(orient="records")
-
-            # Hybrid Recommendation
-            hybrid_tmp = hybrid_recommendation(prov, top_n=5)
-            hybrid_tmp = add_decision_info(hybrid_tmp).to_dict(orient="records")
-
-            # Knowledge-Based: Skor Prioritas & Rasio Dokter/Puskesmas
-            priority_row = kb_full[kb_full["provinsi"] == prov]
-            if not priority_row.empty:
-                priority_info = {
-                    "skor_prioritas":        float(priority_row.iloc[0]["skor_prioritas"]),
-                    "rasio_dokter_puskesmas": float(priority_row.iloc[0]["rasio_dokter_puskesmas"])
-                }
-            else:
-                priority_info = {
-                    "skor_prioritas":        0.0,
-                    "rasio_dokter_puskesmas": 0.0
-                }
-
-            province_data[prov] = {
-                "content_based":   cb_tmp,
-                "knowledge_based": priority_info,
-                "hybrid":          hybrid_tmp
-            }
-        except Exception:
-            province_data[prov] = {
-                "content_based":   [],
-                "knowledge_based": {"skor_prioritas": 0.0, "rasio_dokter_puskesmas": 0.0},
-                "hybrid":          []
-            }
+    # Ambil data peta dari cache
+    province_data = get_province_data_cached(provinces, kb_full)
 
     return render_template(
         "index.html",
@@ -141,12 +164,14 @@ def index():
         cb_result=cb_result,
         kb_result=kb_result,
         hybrid_result=hybrid_result,
-        province_data_json=json.dumps(province_data)
+        province_data_json=json.dumps(province_data),
     )
+
 
 @app.route("/test")
 def test():
     return "Flask MedDistrib jalan"
+
 
 if __name__ == "__main__":
     app.run(debug=True)
