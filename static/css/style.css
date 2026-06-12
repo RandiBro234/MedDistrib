@@ -734,3 +734,192 @@ tbody td{
     grid-template-columns:1fr;
   }
 }
+
+/* HYBRID WEIGHT SIMULATOR */
+.weight-simulator{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+.weight-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  color:var(--text);
+}
+
+.weight-row span{
+  color:var(--muted);
+}
+
+.weight-row strong{
+  font-size:22px;
+  color:var(--green);
+}
+
+#alpha-slider{
+  width:100%;
+  accent-color:var(--green);
+  cursor:pointer;
+}
+
+.simulator-btn{
+  align-self:flex-start;
+  border:none;
+  background:var(--gold);
+  color:#183434;
+  padding:13px 24px;
+  border-radius:999px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+/* ANALYSIS SECTION */
+.analysis-section{
+  margin:24px 0;
+  scroll-margin-top:100px;
+}
+
+.analysis-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:24px;
+}
+
+.analysis-card{
+  background:var(--glass-bg);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border:var(--glass-border);
+  border-radius:24px;
+  padding:28px;
+  box-shadow:var(--shadow);
+}
+
+/* EXPLAINABLE RECOMMENDATION */
+.explain-list{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.explain-item{
+  background:rgba(255,255,255,0.5);
+  border:1px solid rgba(255,255,255,0.7);
+  border-radius:20px;
+  padding:18px;
+}
+
+.explain-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+
+.explain-head h4{
+  margin:0;
+  font-size:17px;
+}
+
+.explain-head span{
+  background:#ccecdf;
+  color:#155348;
+  padding:8px 12px;
+  border-radius:999px;
+  font-weight:700;
+}
+
+.explain-meta{
+  margin:8px 0 10px;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.explain-item ul{
+  margin:0;
+  padding-left:18px;
+}
+
+.explain-item li{
+  margin-bottom:6px;
+  line-height:1.5;
+}
+
+/* RADAR CHART */
+.chart-box{
+  width:100%;
+  height:420px;
+  background:rgba(255,255,255,0.45);
+  border:1px solid rgba(255,255,255,0.7);
+  border-radius:22px;
+  padding:20px;
+}
+
+/* RESPONSIVE ADDITION */
+@media (max-width: 1100px){
+  .analysis-grid{
+    grid-template-columns:1fr;
+  }
+
+  .chart-box{
+    height:360px;
+  }
+}
+
+/* INSIGHT BOX */
+
+.insight-box{
+    margin-top:20px;
+    background:rgba(255,255,255,0.55);
+    border:1px solid rgba(255,255,255,0.8);
+    border-radius:20px;
+    padding:20px;
+}
+
+.insight-box h4{
+    margin-bottom:12px;
+    color:#183434;
+}
+
+.insight-box p{
+    margin-bottom:12px;
+    line-height:1.6;
+    color:#476767;
+}
+
+.insight-list{
+    padding-left:18px;
+    margin-bottom:18px;
+}
+
+.insight-list li{
+    margin-bottom:8px;
+    line-height:1.5;
+}
+
+.insight-metrics{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.metric-pill{
+    background:#d7efe6;
+    color:#155348;
+    padding:10px 14px;
+    border-radius:999px;
+    font-size:14px;
+    font-weight:600;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    min-width:90px;
+}
+
+.metric-pill strong{
+    margin-top:4px;
+    font-size:18px;
+}
