@@ -691,13 +691,43 @@ tbody td{
 }
 
 @media (max-width: 760px){
+
   .navbar{
     padding:16px 20px;
-    flex-wrap:wrap;
+    flex-direction:column;
+    align-items:flex-start;
     gap:12px;
   }
 
+  .brand{
+    font-size:20px;
+  }
+
   .nav-links{
+    display:flex;
+    width:100%;
+    overflow-x:auto;
+    overflow-y:hidden;
+    gap:10px;
+    padding-bottom:4px;
+    scrollbar-width:none;
+    -ms-overflow-style:none;
+  }
+
+  .nav-links::-webkit-scrollbar{
+    display:none;
+  }
+
+  .nav-links a{
+    white-space:nowrap;
+    padding:8px 14px;
+    border-radius:999px;
+    background:rgba(255,255,255,0.12);
+    font-size:14px;
+    flex-shrink:0;
+  }
+
+  .nav-btn{
     display:none;
   }
 
@@ -707,6 +737,19 @@ tbody td{
 
   .hero h1{
     font-size:34px;
+  }
+
+  .hero-form{
+    flex-direction:column;
+  }
+
+  .hero-form select,
+  .hero-form button{
+    width:100%;
+  }
+
+  .hero-stats{
+    grid-template-columns:1fr;
   }
 
   .hero-visual-card{
@@ -724,6 +767,13 @@ tbody td{
     padding:24px 16px 44px;
   }
 
+  .overview-grid,
+  .result-grid,
+  .analysis-grid,
+  .map-layout{
+    grid-template-columns:1fr;
+  }
+
   .hybrid-item{
     flex-direction:column;
     align-items:flex-start;
@@ -732,6 +782,20 @@ tbody td{
 
   .map-metric-grid{
     grid-template-columns:1fr;
+  }
+
+  .chart-box{
+    height:300px;
+  }
+
+  table{
+    font-size:13px;
+  }
+
+  .main-result-card,
+  .analysis-card,
+  .result-card{
+    padding:20px;
   }
 }
 
