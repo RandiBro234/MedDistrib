@@ -8,27 +8,36 @@ document.addEventListener("DOMContentLoaded", () => {
     const form = document.querySelector(".hero-form");
     const provinceSelect = document.getElementById("provinsi-select");
 
-    // Submit dropdown provinsi pakai GET agar URL ikut berubah
+    function getAlphaValue() {
+        if (!alphaSlider) return 0.6;
+        return Number(alphaSlider.value) / 100;
+    }
+
+    function buildUrl(selected, alpha, hash = "") {
+        const url = new URL(window.location.origin + "/");
+        url.searchParams.set("provinsi", selected);
+        url.searchParams.set("alpha", alpha.toFixed(2));
+
+        if (hash) {
+            url.hash = hash;
+        }
+
+        return url.toString();
+    }
+
+    // Tombol Analisis: reload dan langsung menuju section Analisis
     if (form && provinceSelect) {
         form.addEventListener("submit", (e) => {
             e.preventDefault();
 
             const selected = provinceSelect.value;
-            const url = new URL(window.location.origin + "/");
+            const alpha = getAlphaValue();
 
-            url.searchParams.set("provinsi", selected);
-
-            if (alphaSlider) {
-                const alpha = Number(alphaSlider.value) / 100;
-                url.searchParams.set("alpha", alpha.toFixed(2));
-            }
-
-            url.hash = "results";
-            window.location.href = url.toString();
+            window.location.href = buildUrl(selected, alpha, "analysis");
         });
     }
 
-    // Slider bobot hybrid
+    // Slider bobot: hanya update label persentase
     if (alphaSlider && alphaLabel && betaLabel) {
         alphaSlider.addEventListener("input", () => {
             const alphaValue = Number(alphaSlider.value);
@@ -39,18 +48,45 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Tombol terapkan bobot
+    // Tombol Terapkan Bobot: tanpa reload, tanpa scroll
     if (applyBtn && alphaSlider) {
-        applyBtn.addEventListener("click", () => {
-            const alpha = Number(alphaSlider.value) / 100;
+        applyBtn.addEventListener("click", async () => {
             const selected = provinceSelect ? provinceSelect.value : selectedProvince;
+            const alpha = getAlphaValue();
 
-            const url = new URL(window.location.origin + "/");
-            url.searchParams.set("provinsi", selected);
-            url.searchParams.set("alpha", alpha.toFixed(2));
-            url.hash = "results";
+            try {
+                const response = await fetch(
+                    `/api/hybrid?provinsi=${encodeURIComponent(selected)}&alpha=${alpha.toFixed(2)}`
+                );
 
-            window.location.href = url.toString();
+                const data = await response.json();
+
+                const hybridList = document.getElementById("hybrid-list");
+
+                if (!hybridList) return;
+
+                hybridList.innerHTML = "";
+
+                data.slice(0, 5).forEach((item, index) => {
+                    hybridList.innerHTML += `
+                        <div class="hybrid-item ${index === 0 ? "highlight" : ""}">
+                            <div class="hybrid-left">
+                                <h4>${item.provinsi}</h4>
+                                <p>${item.rekomendasi} — ${item.status}</p>
+                            </div>
+
+                            <div class="hybrid-right">
+                                <span class="hybrid-score">
+                                    ${Number(item.skor_hybrid).toFixed(3)}
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                });
+
+            } catch (error) {
+                console.error("Gagal memperbarui hybrid recommendation:", error);
+            }
         });
     }
 

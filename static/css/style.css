@@ -987,3 +987,7 @@ tbody td{
     margin-top:4px;
     font-size:18px;
 }
+
+html{
+    scroll-behavior: smooth;
+}
