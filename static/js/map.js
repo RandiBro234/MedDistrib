@@ -6,18 +6,33 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 function normalizeProvinceName(name) {
     if (!name) return "UNKNOWN";
-    
+
     let upper = name.trim().toUpperCase();
-    upper = upper.replace("NUSATENGGARA", "NUSA TENGGARA");
-    upper = upper.replace("DAERAH ISTIMEWA YOGYAKARTA", "DI YOGYAKARTA");
-    upper = upper.replace("IRIAN JAYA TIMUR", "PAPUA");
-    upper = upper.replace("IRIAN JAYA TENGAH", "PAPUA TENGAH");
-    upper = upper.replace("IRIAN JAYA BARAT", "PAPUA BARAT");
-    
-    if (upper === "JAKARTA") upper = "DKI JAKARTA";
-    if (upper === "YOGYAKARTA") upper = "DI YOGYAKARTA";
-    
-    return upper;
+
+    const mapping = {
+        "DI. ACEH": "ACEH",
+        "DAERAH ISTIMEWA ACEH": "ACEH",
+        "NANGGROE ACEH DARUSSALAM": "ACEH",
+
+        "PROBANTEN": "BANTEN",
+
+        "BANGKA BELITUNG": "KEPULAUAN BANGKA BELITUNG",
+        "KEP. BANGKA BELITUNG": "KEPULAUAN BANGKA BELITUNG",
+
+        "DAERAH ISTIMEWA YOGYAKARTA": "DI YOGYAKARTA",
+        "YOGYAKARTA": "DI YOGYAKARTA",
+
+        "JAKARTA": "DKI JAKARTA",
+
+        "NUSATENGGARA BARAT": "NUSA TENGGARA BARAT",
+        "NUSATENGGARA TIMUR": "NUSA TENGGARA TIMUR",
+
+        "IRIAN JAYA TIMUR": "PAPUA",
+        "IRIAN JAYA TENGAH": "PAPUA TENGAH",
+        "IRIAN JAYA BARAT": "PAPUA BARAT"
+    };
+
+    return mapping[upper] || upper;
 }
 
 function getProvinceName(feature) {
