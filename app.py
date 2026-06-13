@@ -37,10 +37,6 @@ def normalize_province_name(name):
 
 
 def add_decision_info(df):
-    """
-    Menambahkan status dan rekomendasi berdasarkan ranking prioritas nasional,
-    bukan hanya berdasarkan skor numerik.
-    """
     status_list = []
     rekomendasi_list = []
 
@@ -50,15 +46,12 @@ def add_decision_info(df):
         if rank is None:
             status = "TIDAK DIKETAHUI"
             rekom = "Data ranking tidak tersedia"
-
         elif rank <= 10:
             status = "PRIORITAS TINGGI"
             rekom = "Tambah tenaga kesehatan"
-
         elif rank <= 25:
             status = "PERLU PERHATIAN"
             rekom = "Evaluasi distribusi"
-
         else:
             status = "STABIL"
             rekom = "Distribusi relatif memadai"
@@ -69,7 +62,6 @@ def add_decision_info(df):
     df = df.copy()
     df["status"] = status_list
     df["rekomendasi"] = rekomendasi_list
-
     return df
 
 
@@ -99,6 +91,7 @@ def get_selected_profile(provinsi):
     ]
 
     profile = {}
+
     for col in cols:
         if col in row:
             try:
@@ -107,6 +100,20 @@ def get_selected_profile(provinsi):
                 profile[col] = 0.0
 
     return profile
+
+
+def get_best_similarity_target(selected):
+    """
+    Mengambil provinsi yang PALING MIRIP berdasarkan Content-Based Filtering.
+    Ini dipakai khusus untuk radar chart dan insight kemiripan,
+    supaya tidak salah memakai provinsi prioritas tertinggi.
+    """
+    cb_df = get_similar_provinces(selected, top_n=1)
+
+    if cb_df.empty:
+        return None
+
+    return cb_df.iloc[0]["provinsi"]
 
 
 def get_explainable_recommendation(selected, hybrid_result):
@@ -118,6 +125,9 @@ def get_explainable_recommendation(selected, hybrid_result):
         target_profile = get_selected_profile(target)
 
         reasons = []
+
+        similarity = float(row.get("similarity", 0))
+        priority = float(row.get("skor_prioritas", 0))
 
         if selected_profile and target_profile:
             rasio_gap = abs(
@@ -140,6 +150,9 @@ def get_explainable_recommendation(selected, hybrid_result):
                 - target_profile.get("total_rumah_sakit", 0)
             )
 
+            if similarity >= 0.8:
+                reasons.append("Memiliki karakteristik kesehatan yang sangat mirip")
+
             if rasio_gap <= 0.15:
                 reasons.append("Rasio dokter per puskesmas relatif mirip")
 
@@ -152,17 +165,20 @@ def get_explainable_recommendation(selected, hybrid_result):
             if rs_gap <= 30:
                 reasons.append("Jumlah rumah sakit relatif sebanding")
 
-        if row["skor_prioritas"] > 0.8:
+        if priority > 0.8:
             reasons.append("Memiliki skor prioritas distribusi tinggi")
-        elif row["skor_prioritas"] > 0.6:
+        elif priority > 0.6:
             reasons.append("Masih membutuhkan evaluasi distribusi tenaga kesehatan")
         else:
             reasons.append("Memiliki kondisi distribusi relatif stabil")
 
+        if not reasons:
+            reasons.append("Direkomendasikan berdasarkan kombinasi similarity dan prioritas")
+
         explanations.append({
             "provinsi": target,
-            "similarity": float(row["similarity"]),
-            "skor_prioritas": float(row["skor_prioritas"]),
+            "similarity": similarity,
+            "skor_prioritas": priority,
             "skor_hybrid": float(row["skor_hybrid"]),
             "status": row["status"],
             "rekomendasi": row["rekomendasi"],
@@ -170,6 +186,38 @@ def get_explainable_recommendation(selected, hybrid_result):
         })
 
     return explanations
+
+
+def get_similarity_insight(selected):
+    """
+    Insight khusus untuk provinsi paling mirip.
+    Ini dipakai agar kalimat 'paling mirip' benar-benar berdasarkan similarity.
+    """
+    cb_df = get_similar_provinces(selected, top_n=1)
+
+    if cb_df.empty:
+        return {}
+
+    target = cb_df.iloc[0]["provinsi"]
+    similarity = float(cb_df.iloc[0]["similarity"])
+
+    priority_df = build_priority()
+    priority_row = priority_df[priority_df["provinsi"] == target]
+
+    if priority_row.empty:
+        skor_prioritas = 0.0
+        ranking_prioritas = None
+    else:
+        skor_prioritas = float(priority_row.iloc[0]["skor_prioritas"])
+        ranking_prioritas = int(priority_row.iloc[0]["ranking_prioritas"])
+
+    return {
+        "selected": selected,
+        "target": target,
+        "similarity": similarity,
+        "skor_prioritas": skor_prioritas,
+        "ranking_prioritas": ranking_prioritas
+    }
 
 
 def get_radar_comparison(selected, target):
@@ -241,11 +289,15 @@ def get_province_data_cached(provinces, kb_full):
                     "rasio_dokter_puskesmas": float(
                         priority_row.iloc[0]["rasio_dokter_puskesmas"]
                     ),
+                    "ranking_prioritas": int(
+                        priority_row.iloc[0]["ranking_prioritas"]
+                    )
                 }
             else:
                 priority_info = {
                     "skor_prioritas": 0.0,
                     "rasio_dokter_puskesmas": 0.0,
+                    "ranking_prioritas": None
                 }
 
             province_data[prov] = {
@@ -262,6 +314,7 @@ def get_province_data_cached(provinces, kb_full):
                 "knowledge_based": {
                     "skor_prioritas": 0.0,
                     "rasio_dokter_puskesmas": 0.0,
+                    "ranking_prioritas": None
                 },
                 "hybrid": [],
             }
@@ -283,6 +336,7 @@ def index():
     selected = normalize_province_name(raw_selected)
 
     alpha = request.args.get("alpha", default=0.6, type=float)
+    alpha = max(0, min(alpha, 1))
     beta = 1 - alpha
 
     kb_top10 = get_priority_provinces(10)
@@ -311,11 +365,15 @@ def index():
         hybrid_result
     )
 
+    similarity_insight = get_similarity_insight(selected)
+
     radar_data = {}
-    if hybrid_result:
+    radar_target = get_best_similarity_target(selected)
+
+    if radar_target:
         radar_data = get_radar_comparison(
             selected,
-            hybrid_result[0]["provinsi"]
+            radar_target
         )
 
     return render_template(
@@ -329,6 +387,7 @@ def index():
         hybrid_result=hybrid_result,
         selected_profile=selected_profile,
         explain_result=explain_result,
+        similarity_insight=similarity_insight,
         radar_data_json=json.dumps(radar_data),
         province_data_json=json.dumps(province_data),
     )
@@ -338,6 +397,7 @@ def index():
 def api_hybrid():
     provinsi = normalize_province_name(request.args.get("provinsi", "ACEH"))
     alpha = request.args.get("alpha", default=0.6, type=float)
+    alpha = max(0, min(alpha, 1))
     beta = 1 - alpha
 
     hybrid_df = hybrid_recommendation(
@@ -356,6 +416,7 @@ def api_hybrid():
 def api_explain():
     provinsi = normalize_province_name(request.args.get("provinsi", "ACEH"))
     alpha = request.args.get("alpha", default=0.6, type=float)
+    alpha = max(0, min(alpha, 1))
     beta = 1 - alpha
 
     hybrid_df = hybrid_recommendation(
@@ -379,11 +440,26 @@ def api_explain():
 @app.route("/api/radar")
 def api_radar():
     selected = normalize_province_name(request.args.get("selected", "ACEH"))
-    target = normalize_province_name(request.args.get("target", "ACEH"))
+
+    target = request.args.get("target")
+
+    if target:
+        target = normalize_province_name(target)
+    else:
+        target = get_best_similarity_target(selected)
+
+    if not target:
+        return jsonify({})
 
     radar_data = get_radar_comparison(selected, target)
 
     return jsonify(radar_data)
+
+
+@app.route("/api/similarity-insight")
+def api_similarity_insight():
+    provinsi = normalize_province_name(request.args.get("provinsi", "ACEH"))
+    return jsonify(get_similarity_insight(provinsi))
 
 
 @app.route("/test")
