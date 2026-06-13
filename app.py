@@ -37,26 +37,31 @@ def normalize_province_name(name):
 
 
 def add_decision_info(df):
+    """
+    Menambahkan status dan rekomendasi berdasarkan ranking prioritas nasional,
+    bukan hanya berdasarkan skor numerik.
+    """
     status_list = []
     rekomendasi_list = []
 
     for _, row in df.iterrows():
-        hybrid = row["skor_hybrid"]
-        priority = row["skor_prioritas"]
+        rank = row.get("ranking_prioritas", None)
 
-        if hybrid > 0.9:
+        if rank is None:
+            status = "TIDAK DIKETAHUI"
+            rekom = "Data ranking tidak tersedia"
+
+        elif rank <= 10:
             status = "PRIORITAS TINGGI"
-        elif hybrid > 0.8:
+            rekom = "Tambah tenaga kesehatan"
+
+        elif rank <= 25:
             status = "PERLU PERHATIAN"
+            rekom = "Evaluasi distribusi"
+
         else:
             status = "STABIL"
-
-        if priority > 0.8:
-            rekom = "Tambah tenaga kesehatan"
-        elif priority > 0.6:
-            rekom = "Evaluasi distribusi"
-        else:
-            rekom = "Cukup stabil"
+            rekom = "Distribusi relatif memadai"
 
         status_list.append(status)
         rekomendasi_list.append(rekom)
@@ -64,6 +69,7 @@ def add_decision_info(df):
     df = df.copy()
     df["status"] = status_list
     df["rekomendasi"] = rekomendasi_list
+
     return df
 
 

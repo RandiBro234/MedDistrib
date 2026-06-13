@@ -23,6 +23,7 @@
         <div class="nav-links">
             <a href="#hero">Home</a>
             <a href="#overview">Overview</a>
+            <a href="#priority-overview">Prioritas</a>
             <a href="#map-section">Peta</a>
             <a href="#results">Hasil</a>
             <a href="#analysis">Analisis</a>
@@ -137,6 +138,65 @@
             </div>
         </div>
     </section>
+
+    {% if selected %}
+    <section class="results" id="priority-overview">
+        <div class="section-head">
+            <p class="section-tag">Ringkasan Prioritas Nasional</p>
+            <h2>Provinsi dengan kebutuhan distribusi tenaga kesehatan tertinggi</h2>
+        </div>
+
+        <div class="result-grid">
+            <div class="result-card">
+                <div class="panel-topline">Knowledge-Based Scoring</div>
+                <h3>Prioritas Distribusi Tenaga Kesehatan Nasional</h3>
+                <p class="card-desc">Top 10 provinsi dengan kebutuhan distribusi tenaga kesehatan tertinggi.</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Provinsi</th>
+                            <th>Skor Prioritas</th>
+                            <th>Rasio D/P</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in kb_result %}
+                        <tr>
+                            <td>{{ row.provinsi }}</td>
+                            <td>{{ "%.3f"|format(row.skor_prioritas) }}</td>
+                            <td>{{ "%.3f"|format(row.rasio_dokter_puskesmas) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="result-card">
+                <div class="panel-topline">Content-Based Filtering</div>
+                <h3>Provinsi Mirip dengan {{ selected }}</h3>
+                <p class="card-desc">Kemiripan berdasarkan Cosine Similarity pada fitur kesehatan wilayah.</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Provinsi</th>
+                            <th>Similarity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in cb_result %}
+                        <tr>
+                            <td>{{ row.provinsi }}</td>
+                            <td>{{ "%.3f"|format(row.similarity) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+    {% endif %}
 
     <section class="map-section" id="map-section">
         <div class="section-head">
@@ -331,56 +391,6 @@
                 </div>
             </div>
         </section>
-
-        <div class="result-grid">
-            <div class="result-card">
-                <div class="panel-topline">Content-Based Filtering</div>
-                <h3>Provinsi Mirip dengan {{ selected }}</h3>
-                <p class="card-desc">Kemiripan berdasarkan Cosine Similarity pada fitur kesehatan wilayah.</p>
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Provinsi</th>
-                            <th>Similarity</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for row in cb_result %}
-                        <tr>
-                            <td>{{ row.provinsi }}</td>
-                            <td>{{ "%.3f"|format(row.similarity) }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="result-card">
-                <div class="panel-topline">Knowledge-Based Scoring</div>
-                <h3>Prioritas Distribusi Tenaga Kesehatan Nasional</h3>
-                <p class="card-desc">Top 10 provinsi dengan kebutuhan distribusi tenaga kesehatan tertinggi.</p>
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Provinsi</th>
-                            <th>Skor Prioritas</th>
-                            <th>Rasio D/P</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for row in kb_result %}
-                        <tr>
-                            <td>{{ row.provinsi }}</td>
-                            <td>{{ "%.3f"|format(row.skor_prioritas) }}</td>
-                            <td>{{ "%.3f"|format(row.rasio_dokter_puskesmas) }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
     </section>
     {% endif %}
 
